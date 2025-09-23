@@ -89,4 +89,3 @@ class AccountsGatewayHTTPClient(HTTPClient):
         :return: Объект httpx.Response.
         """
         return self.post("/api/v1/accounts/open-credit-card-account", json=request)
-
