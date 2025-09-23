@@ -5,68 +5,81 @@ from httpx import Response, QueryParams
 from clients.http.client import HTTPClient
 
 
-
-
 class GetOperationsQueryDict(TypedDict):
+    """
+    Структура query параметров запроса для получения списка операций по счёту.
+    """
     accountId: str
 
-class MakeFeeOperationRequestDict(TypedDict):
+
+class GetOperationsSummaryQueryDict(TypedDict):
+    """
+    Структура query параметров запроса для получения статистики по операциям счёта.
+    """
+    accountId: str
+
+
+class MakeOperationRequestDict(TypedDict):
+    """
+    Базовая структура тела запроса для создания финансовой операции.
+    """
     status: str
-    amount: str
+    amount: float
     cardId: str
     accountId: str
+
+
+class MakeFeeOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции комиссии
+    Структура запроса для создания операции комиссии.
     """
-class MakeTopUpOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
+    pass
+
+
+class MakeTopUpOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции пополнения.
+    Структура запроса для создания операции пополнения.
     """
-class MakeCashbackOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
+    pass
+
+
+class MakeCashbackOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции кэшбэка.
+    Структура запроса для создания операции кэшбэка.
     """
-class MakeTransferOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
+    pass
+
+
+class MakeTransferOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции перевода.
+    Структура запроса для создания операции перевода.
     """
-class MakePurchaseOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
+    pass
+
+
+class MakePurchaseOperationRequestDict(MakeOperationRequestDict):
+    """
+    Структура запроса для создания операции покупки.
+
+    Дополнительное поле:
+    - category: категория покупки.
+    """
     category: str
+
+
+class MakeBillPaymentOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции покупки.
+    Структура запроса для создания операции оплаты по счёту.
     """
-class MakeBillPaymentOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
+    pass
+
+
+class MakeCashWithdrawalOperationRequestDict(MakeOperationRequestDict):
     """
-    Создание операции оплаты по счету
+    Структура запроса для создания операции снятия наличных.
     """
-class MakeCashWithdrawalOperationRequestDict(TypedDict):
-    status: str
-    amount: str
-    cardId: str
-    accountId: str
-    """
-    Создание операции снятия наличных денег.
-    """
+    pass
+
 
 class OperationsGatewayHTTPClient(HTTPClient):
     """
@@ -75,100 +88,102 @@ class OperationsGatewayHTTPClient(HTTPClient):
 
     def get_operation_api(self, operation_id: str) -> Response:
         """
-        Получение информации об операции по operation_id..
+        Получает информацию об операции по её идентификатору.
 
-        :param operation_id: Идентификатор операции.
-        :return: Ответ от сервера (объект httpx.Response).
+        :param operation_id: Уникальный идентификатор операции.
+        :return: Объект httpx.Response с данными об операции.
         """
         return self.get(f"/api/v1/operations/{operation_id}")
 
     def get_operation_receipt_api(self, operation_id: str) -> Response:
         """
-        Получение чека по операции по operation_id.
+        Получает чек по заданной операции.
 
-        :param operation_id: Идентификатор операции.
-        :return: Ответ от сервера (объект httpx.Response).
+        :param operation_id: Уникальный идентификатор операции.
+        :return: Объект httpx.Response с чеком по операции.
         """
         return self.get(f"/api/v1/operations/operation-receipt/{operation_id}")
 
     def get_operations_api(self, query: GetOperationsQueryDict) -> Response:
         """
-        Получение списка операций для определенного счета.
+        Получает список операций по счёту.
 
-        :param account_id: Идентификатор счета.
-        :return: Ответ от сервера (объект httpx.Response).
+        :param query: Словарь с параметром accountId.
+        :return: Объект httpx.Response с операциями по счёту.
         """
         return self.get("/api/v1/operations", params=QueryParams(**query))
 
-    def get_operations_summary_api(self, query: GetOperationsQueryDict) -> Response:
+    def get_operations_summary_api(self, query: GetOperationsSummaryQueryDict) -> Response:
         """
-        Получение статистики по операциям для определенного счета.
+        Получает сводную статистику операций по счёту.
 
-        :param account_id: Идентификатор счета.
-        :return: Ответ от сервера (объект httpx.Response).
+        :param query: Словарь с параметром accountId.
+        :return: Объект httpx.Response с агрегированной информацией.
         """
-        return self.get("/api/v1/operations/operations-summary",params=QueryParams(**query))
+        return self.get("/api/v1/operations/operations-summary", params=QueryParams(**query))
 
     def make_fee_operation_api(self, request: MakeFeeOperationRequestDict) -> Response:
         """
-        Post запрос создание операции комиссии.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию комиссии.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-fee-operation", json=request)
 
     def make_top_up_operation_api(self, request: MakeTopUpOperationRequestDict) -> Response:
         """
-        Post запрос создание операции пополнения.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию пополнения счёта.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-top-up-operation", json=request)
 
     def make_cashback_operation_api(self, request: MakeCashbackOperationRequestDict) -> Response:
         """
-        Post запрос создание операции кэшбэка.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию начисления кэшбэка.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-cashback-operation", json=request)
 
     def make_transfer_operation_api(self, request: MakeTransferOperationRequestDict) -> Response:
         """
-        Post запрос создание операции перевода.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию перевода средств.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-transfer-operation", json=request)
 
     def make_purchase_operation_api(self, request: MakePurchaseOperationRequestDict) -> Response:
         """
-        Post запрос создание операции покупки.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию покупки.
+
+        :param request: Тело запроса с параметрами операции, включая категорию.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-purchase-operation", json=request)
 
     def make_bill_payment_operation_api(self, request: MakeBillPaymentOperationRequestDict) -> Response:
         """
-        Post запрос создание операции оплаты по счету.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию оплаты счёта.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-bill-payment-operation", json=request)
 
     def make_cash_withdrawal_operation_api(self, request: MakeCashWithdrawalOperationRequestDict) -> Response:
         """
-        Post запрос создание операции снятия наличных денег.
-        :param request: Идентификатор учетной записи
-        :return:Объект httpx.Response с результатом операции.
+        Создаёт операцию снятия наличных средств.
+
+        :param request: Тело запроса с параметрами операции.
+        :return: Объект httpx.Response с результатом операции.
         """
         return self.post("/api/v1/operations/make-cash-withdrawal-operation", json=request)
-
-
-
-
-
 
 
 
