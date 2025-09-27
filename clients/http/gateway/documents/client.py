@@ -1,24 +1,32 @@
 from typing import TypedDict
 
-from httpx import Response, QueryParams
+from httpx import Response
 
 from clients.http.client import HTTPClient
-from clients.http.gateway.accounts.client import AccountDict
-from clients.http.gateway.client import build_gateway_http_client  # Импортируем builder
+from clients.http.gateway.client import build_gateway_http_client
 
-# Добавили описание структуры DocumentDict
+
 class DocumentDict(TypedDict):
-    # описывает JSON-объект
-        url: str
-        document: str
+    """
+    Описание структуры документа.
+    """
+    url: str
+    document: str
 
-# Добавили тип GetTariffDocumentResponseDict
+
 class GetTariffDocumentResponseDict(TypedDict):
+    """
+    Описание структуры ответа получения документа тарифа.
+    """
     tariff: DocumentDict
 
-# Добавили тип GetContractDocumentResponseDict
+
 class GetContractDocumentResponseDict(TypedDict):
+    """
+    Описание структуры ответа получения документа контракта.
+    """
     contract: DocumentDict
+
 
 class DocumentsGatewayHTTPClient(HTTPClient):
     """
@@ -43,17 +51,15 @@ class DocumentsGatewayHTTPClient(HTTPClient):
         """
         return self.get(f"/api/v1/documents/contract-document/{account_id}")
 
-        # реализация метода get_tariff_document
     def get_tariff_document(self, account_id: str) -> GetTariffDocumentResponseDict:
         response = self.get_tariff_document_api(account_id)
         return response.json()
 
-        # реализация метода get_contract_document
     def get_contract_document(self, account_id: str) -> GetContractDocumentResponseDict:
         response = self.get_contract_document_api(account_id)
         return response.json()
 
-# Добавляем builder для DocumentsGatewayHTTPClient
+
 def build_documents_gateway_http_client() -> DocumentsGatewayHTTPClient:
     """
     Функция создаёт экземпляр DocumentsGatewayHTTPClient с уже настроенным HTTP-клиентом.
