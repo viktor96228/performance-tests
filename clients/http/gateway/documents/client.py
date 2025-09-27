@@ -1,7 +1,24 @@
-from httpx import Response
+from typing import TypedDict
+
+from httpx import Response, QueryParams
 
 from clients.http.client import HTTPClient
+from clients.http.gateway.accounts.client import AccountDict
 from clients.http.gateway.client import build_gateway_http_client  # Импортируем builder
+
+# Добавили описание структуры DocumentDict
+class DocumentDict(TypedDict):
+    # описывает JSON-объект
+        url: str
+        document: str
+
+# Добавили тип GetTariffDocumentResponseDict
+class GetTariffDocumentResponseDict(TypedDict):
+    tariff: DocumentDict
+
+# Добавили тип GetContractDocumentResponseDict
+class GetContractDocumentResponseDict(TypedDict):
+    contract: DocumentDict
 
 class DocumentsGatewayHTTPClient(HTTPClient):
     """
@@ -26,12 +43,21 @@ class DocumentsGatewayHTTPClient(HTTPClient):
         """
         return self.get(f"/api/v1/documents/contract-document/{account_id}")
 
-    # Добавляем builder для DocumentsGatewayHTTPClient
-    def build_documents_gateway_http_client() -> DocumentsGatewayHTTPClient:
-        """
-        Функция создаёт экземпляр DocumentsGatewayHTTPClient с уже настроенным HTTP-клиентом.
+        # реализация метода get_tariff_document
+    def get_tariff_document(self, account_id: str) -> GetTariffDocumentResponseDict:
+        response = self.get_tariff_document_api(account_id)
+        return response.json()
 
-        :return: Готовый к использованию DocumentsGatewayHTTPClient.
-        """
-        return DocumentsGatewayHTTPClient(client=build_gateway_http_client())
+        # реализация метода get_contract_document
+    def get_contract_document(self, account_id: str) -> GetContractDocumentResponseDict:
+        response = self.get_contract_document_api(account_id)
+        return response.json()
 
+# Добавляем builder для DocumentsGatewayHTTPClient
+def build_documents_gateway_http_client() -> DocumentsGatewayHTTPClient:
+    """
+    Функция создаёт экземпляр DocumentsGatewayHTTPClient с уже настроенным HTTP-клиентом.
+
+    :return: Готовый к использованию DocumentsGatewayHTTPClient.
+    """
+    return DocumentsGatewayHTTPClient(client=build_gateway_http_client())

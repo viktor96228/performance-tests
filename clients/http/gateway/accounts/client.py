@@ -167,7 +167,7 @@ class AccountsGatewayHTTPClient(HTTPClient):
         response = self.open_credit_card_account_api(request)
         return response.json()
 
-    # Добавляем builder для AccountsGatewayHTTPClient
+
 def build_accounts_gateway_http_client() -> AccountsGatewayHTTPClient:
     """
     Функция создаёт экземпляр AccountsGatewayHTTPClient с уже настроенным HTTP-клиентом.
