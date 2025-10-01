@@ -1,8 +1,7 @@
-from api_client_issue_physical_card import cards_gateway_client
 from clients.http.gateway.users.client import build_users_gateway_http_client
 from clients.http.gateway.accounts.client import build_accounts_gateway_http_client
 from clients.http.gateway.operations.client import build_operations_gateway_http_client
-from httpx_make_top_up_operation import make_top_up_operation_response
+
 
 users_gateway_client = build_users_gateway_http_client()
 accounts_gateway_client = build_accounts_gateway_http_client()
@@ -18,6 +17,9 @@ open_debit_card_account_response = accounts_gateway_client.open_debit_card_accou
 )
 print('Open debit card account response:', open_debit_card_account_response)
 
-# Создаём операцию пополнения
-make_top_up_operation_request = make_top_up_operation_response.json()
-print('OperationsGatewayHTTPClient.make_top_up_operations:', make_top_up_operation_request)
+# Создаём операцию пополнения счёта
+make_top_up_operation_response = operations_gateway_client.make_top_up_operation(
+    card_id=open_debit_card_account_response['account']['cards'][0]['id'],
+    account_id=open_debit_card_account_response['account']['id']
+)
+print('Make top up operation response:', make_top_up_operation_response)

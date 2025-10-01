@@ -1,6 +1,7 @@
 from typing import TypedDict
 
 from httpx import Response, QueryParams
+
 from clients.http.client import HTTPClient
 from clients.http.gateway.client import build_gateway_http_client
 
@@ -16,20 +17,20 @@ class OperationDict(TypedDict):
     accountId: str
 
 # Добавили описание структуры квитанции заданной операции
-class GetOperationReceiptResponseDict(TypedDict):
+class OperationReceiptDict(TypedDict):
     url: str
     document: str
 
-# Добавили описание структуры сводки  операции
-class GetOperationsSummaryResponseDict(TypedDict):
+# Добавили описание структуры статистики по операциям
+class OperationsSummaryDict(TypedDict):
     spentAmount: float
     receivedAmount: float
     cashbackAmount: float
 
 
-# Добавили описание структуры представление  операции
-class GetOperationsResponseDict(TypedDict):
-    operations: list[OperationDict]
+# Добавили описание структуры получения  операции.
+class GetOperationResponseDict(TypedDict):
+    operations: OperationDict
 
 
 class GetOperationsQueryDict(TypedDict):
@@ -39,11 +40,32 @@ class GetOperationsQueryDict(TypedDict):
     accountId: str
 
 
+class GetOperationsResponseDict(TypedDict):
+    """
+    Описание структуры ответа получения списка операций.
+    """
+    operations: list[OperationDict]
+
+
 class GetOperationsSummaryQueryDict(TypedDict):
     """
     Структура query параметров запроса для получения статистики по операциям счёта.
     """
     accountId: str
+
+
+class GetOperationsSummaryResponseDict(TypedDict):
+    """
+    Описание структуры ответа получения статистики по операциям.
+    """
+    summary: OperationsSummaryDict
+
+
+class GetOperationReceiptResponseDict(TypedDict):
+    """
+    Описание структуры ответа получения чека по операции.
+    """
+    receipt: OperationReceiptDict
 
 
 class MakeOperationRequestDict(TypedDict):
@@ -63,11 +85,25 @@ class MakeFeeOperationRequestDict(MakeOperationRequestDict):
     pass
 
 
+class MakeFeeOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции комиссии.
+    """
+    operation: OperationDict
+
+
 class MakeTopUpOperationRequestDict(MakeOperationRequestDict):
     """
     Структура запроса для создания операции пополнения.
     """
     pass
+
+
+class MakeTopUpOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции пополнения.
+    """
+    operation: OperationDict
 
 
 class MakeCashbackOperationRequestDict(MakeOperationRequestDict):
@@ -77,11 +113,25 @@ class MakeCashbackOperationRequestDict(MakeOperationRequestDict):
     pass
 
 
+class MakeCashbackOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции кэшбэка.
+    """
+    operation: OperationDict
+
+
 class MakeTransferOperationRequestDict(MakeOperationRequestDict):
     """
     Структура запроса для создания операции перевода.
     """
     pass
+
+
+class MakeTransferOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции перевода.
+    """
+    operation: OperationDict
 
 
 class MakePurchaseOperationRequestDict(MakeOperationRequestDict):
@@ -94,11 +144,25 @@ class MakePurchaseOperationRequestDict(MakeOperationRequestDict):
     category: str
 
 
+class MakePurchaseOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции покупки.
+    """
+    operation: OperationDict
+
+
 class MakeBillPaymentOperationRequestDict(MakeOperationRequestDict):
     """
     Структура запроса для создания операции оплаты по счёту.
     """
     pass
+
+
+class MakeBillPaymentOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции оплаты по счёту.
+    """
+    operation: OperationDict
 
 
 class MakeCashWithdrawalOperationRequestDict(MakeOperationRequestDict):
@@ -107,28 +171,12 @@ class MakeCashWithdrawalOperationRequestDict(MakeOperationRequestDict):
     """
     pass
 
-# Структура описания
-class MakeFeeOperationResponseDict:
-    operation: OperationDict
 
-class MakeTopUpOperationResponseDict:
+class MakeCashWithdrawalOperationResponseDict(TypedDict):
+    """
+    Описание структуры ответа на создание операции снятия наличных.
+    """
     operation: OperationDict
-
-class MakeCashbackOperationResponseDict:
-    operation: OperationDict
-
-class MakeTransferOperationResponseDict:
-    operation: OperationDict
-
-class MakePurchaseOperationResponseDict:
-    operation: OperationDict
-
-class MakeBillPaymentOperationResponseDict:
-    operation: OperationDict
-
-class MakeCashWithdrawalOperationResponseDict:
-    operation: OperationDict
-
 
 
 class OperationsGatewayHTTPClient(HTTPClient):
@@ -247,7 +295,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
         return response.json()
 
     # Добавили новый метод
-    def get_operation(self, operation_id: str) -> OperationDict:
+    def get_operation(self, operation_id: str) -> GetOperationResponseDict:
         response = self.get_operation_api(operation_id)
         return response.json()
 
@@ -272,7 +320,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
     def make_top_up_operation(self, card_id: str, account_id: str) -> MakeTopUpOperationResponseDict:
         request = MakeTopUpOperationRequestDict(
             status="COMPLETED",
-            amount=55.77,
+            amount=500.11,
             cardId=card_id,
             accountId=account_id
         )
@@ -283,7 +331,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
     def make_cashback_operation(self, card_id: str, account_id: str) -> MakeCashbackOperationResponseDict:
         request = MakeCashbackOperationRequestDict(
             status="COMPLETED",
-            amount=55.77,
+            amount=1500.11,
             cardId=card_id,
             accountId=account_id
         )
@@ -294,7 +342,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
     def make_transfer_operation(self, card_id: str, account_id: str) -> MakeTransferOperationResponseDict:
         request = MakeTransferOperationRequestDict(
             status="COMPLETED",
-            amount=55.77,
+            amount=15.11,
             cardId=card_id,
             accountId=account_id
         )
@@ -308,7 +356,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
             amount=55.77,
             cardId=card_id,
             accountId=account_id,
-            category="string"
+            category="taxi"
         )
         response = self.make_purchase_operation_api(request)
         return response.json()
