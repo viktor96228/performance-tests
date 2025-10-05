@@ -19,5 +19,5 @@ class CreateUserRequestSchema(BaseModel):
 
 # модель CreateUserRequestSchema
 class CreateUserResponseSchema(BaseModel):
-    user: list[UserSchema]
+    user: UserSchema
 
