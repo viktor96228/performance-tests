@@ -1,32 +1,12 @@
-from typing import TypedDict
-
 from httpx import Response
 
 from clients.http.client import HTTPClient
 from clients.http.gateway.client import build_gateway_http_client
 
-# Добавили описание структуры DocumentDict
-class DocumentDict(TypedDict):
-    """
-    Описание структуры документа.
-    """
-    url: str
-    document: str
-
-# Добавили тип GetTariffDocumentResponseDict
-class GetTariffDocumentResponseDict(TypedDict):
-    """
-    Описание структуры ответа получения документа тарифа.
-    """
-    tariff: DocumentDict
-
-# Добавили тип GetContractDocumentResponseDict
-class GetContractDocumentResponseDict(TypedDict):
-    """
-    Описание структуры ответа получения документа контракта.
-    """
-    contract: DocumentDict
-
+from clients.http.gateway.documents.schema import (
+    GetTariffDocumentResponseSchema,
+    GetContractDocumentResponseSchema
+)
 
 class DocumentsGatewayHTTPClient(HTTPClient):
     """
@@ -52,14 +32,14 @@ class DocumentsGatewayHTTPClient(HTTPClient):
         return self.get(f"/api/v1/documents/contract-document/{account_id}")
 
     # реализация метода get_tariff_document
-    def get_tariff_document(self, account_id: str) -> GetTariffDocumentResponseDict:
+    def get_tariff_document(self, account_id: str) -> GetTariffDocumentResponseSchema:
         response = self.get_tariff_document_api(account_id)
-        return response.json()
+        return GetTariffDocumentResponseSchema.model_validate_json(response.text)
 
     # реализация метода get_contract_document
-    def get_contract_document(self, account_id: str) -> GetContractDocumentResponseDict:
+    def get_contract_document(self, account_id: str) -> GetContractDocumentResponseSchema:
         response = self.get_contract_document_api(account_id)
-        return response.json()
+        return GetContractDocumentResponseSchema.model_validate_json(response.text)
 
 # Добавляем builder для DocumentsGatewayHTTPClient
 def build_documents_gateway_http_client() -> DocumentsGatewayHTTPClient:
