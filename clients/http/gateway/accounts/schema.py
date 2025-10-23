@@ -24,9 +24,9 @@ class AccountSchema(BaseModel):
     Описание структуры аккаунта.
     """
     id: str
-    type: str
-    cards: list[CardSchema]  # Вложенная структура: список карт
-    status: str
+    type: AccountType
+    cards: list[CardSchema]
+    status: AccountStatus
     balance: float
 
 class GetAccountsQuerySchema(BaseModel):

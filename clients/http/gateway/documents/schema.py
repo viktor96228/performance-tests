@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, HttpUrl, Field, ConfigDict
 
 # Добавили описание структуры DocumentSchema
 class DocumentSchema(BaseModel):
     """
     Описание структуры документа.
     """
-    url: str
+    url: HttpUrl
     document: str
 
 # Добавили тип GetTariffDocumentResponseSchema
