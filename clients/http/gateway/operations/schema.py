@@ -1,7 +1,7 @@
+from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, HttpUrl, Field, ConfigDict
-from unicodedata import category
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict
 
 
 class OperationType(StrEnum):
@@ -20,33 +20,43 @@ class OperationStatus(StrEnum):
     IN_PROGRESS = "IN_PROGRESS"
     UNSPECIFIED = "UNSPECIFIED"
 
-# Добавили описание структуры операций
+
 class OperationSchema(BaseModel):
+    """
+    Описание структуры операции.
+    """
     id: str
     type: OperationType
     status: OperationStatus
-    amount:float
-    card_Id: str = Field(alias="cardId")
-    category: str = Field(alias="category")
-    createdAt: str = Field(alias="createdAt")
-    account_Id: str = Field(alias="accountId")
+    amount: float
+    card_id: str = Field(alias="cardId")
+    category: str
+    created_at: datetime = Field(alias="createdAt")
+    account_id: str = Field(alias="accountId")
 
-# Добавили описание структуры квитанции заданной операции
+
 class OperationReceiptSchema(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-    url: str = Field(alias="url")
-    document: str = Field(alias="document")
+    """
+    Описание структуры чека по операции.
+    """
+    url: HttpUrl
+    document: str
 
-# Добавили описание структуры статистики по операциям
+
 class OperationsSummarySchema(BaseModel):
-    spentAmount: float
-    receivedAmount: float
-    cashbackAmount: float
+    """
+    Описание структуры статистики по операциям.
+    """
+    spent_amount: float = Field(alias="spentAmount")
+    received_amount: float = Field(alias="receivedAmount")
+    cashback_amount: float = Field(alias="cashbackAmount")
 
 
-# Добавили описание структуры получения  операции.
 class GetOperationResponseSchema(BaseModel):
-    operations: OperationSchema
+    """
+    Описание структуры ответа получения операции.
+    """
+    operation: OperationSchema
 
 
 class GetOperationsQuerySchema(BaseModel):
@@ -92,10 +102,12 @@ class MakeOperationRequestSchema(BaseModel):
     """
     Базовая структура тела запроса для создания финансовой операции.
     """
+    model_config = ConfigDict(populate_by_name=True)
+
     status: OperationStatus
     amount: float
-    card_Id: str = Field(alias="cardId")
-    account_Id: str = Field(alias="accountId")
+    card_id: str = Field(alias="cardId")
+    account_id: str = Field(alias="accountId")
 
 
 class MakeFeeOperationRequestSchema(MakeOperationRequestSchema):
@@ -140,7 +152,7 @@ class MakeCashbackOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeTransferOperationRequestDict(MakeOperationRequestSchema):
+class MakeTransferOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура запроса для создания операции перевода.
     """
@@ -161,7 +173,7 @@ class MakePurchaseOperationRequestSchema(MakeOperationRequestSchema):
     Дополнительное поле:
     - category: категория покупки.
     """
-    category: str = Field(alias="category")
+    category: str
 
 
 class MakePurchaseOperationResponseSchema(BaseModel):
