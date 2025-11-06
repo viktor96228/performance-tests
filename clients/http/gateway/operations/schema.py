@@ -2,7 +2,9 @@ from datetime import datetime
 from enum import StrEnum
 
 from pydantic import BaseModel, Field, HttpUrl, ConfigDict
+
 from tools.fakers import fake
+
 
 class OperationType(StrEnum):
     FEE = "FEE"
@@ -18,7 +20,6 @@ class OperationStatus(StrEnum):
     FAILED = "FAILED"
     COMPLETED = "COMPLETED"
     IN_PROGRESS = "IN_PROGRESS"
-    UNSPECIFIED = "UNSPECIFIED"
 
 
 class OperationSchema(BaseModel):
@@ -27,11 +28,10 @@ class OperationSchema(BaseModel):
     """
     id: str
     type: OperationType
-    status: OperationStatus = Field(default_factory=lambda: fake.enum(OperationStatus))
-    amount: float = Field(default_factory=lambda: fake.amount())
+    status: OperationStatus
+    amount: float
     card_id: str = Field(alias="cardId")
-    # Добавили генерацию случайной категории
-    category: str = Field(default_factory=lambda: fake.category())
+    category: str
     created_at: datetime = Field(alias="createdAt")
     account_id: str = Field(alias="accountId")
 
@@ -104,10 +104,9 @@ class MakeOperationRequestSchema(BaseModel):
     Базовая структура тела запроса для создания финансовой операции.
     """
     model_config = ConfigDict(populate_by_name=True)
-    # Добавили генерацию случайного статуса
+
     status: OperationStatus = Field(default_factory=lambda: fake.enum(OperationStatus))
-    # Добавили генерацию случайной суммы
-    amount: float = Field(default_factory=lambda: fake.amount())
+    amount: float = Field(default_factory=fake.amount)
     card_id: str = Field(alias="cardId")
     account_id: str = Field(alias="accountId")
 
@@ -175,7 +174,7 @@ class MakePurchaseOperationRequestSchema(MakeOperationRequestSchema):
     Дополнительное поле:
     - category: категория покупки.
     """
-    category: str
+    category: str = Field(default_factory=fake.category)
 
 
 class MakePurchaseOperationResponseSchema(BaseModel):
