@@ -1,6 +1,6 @@
 from httpx import Response, QueryParams
 
-from clients.http.client import HTTPClient
+from clients.http.client import HTTPClient, HTTPClientExtensions  # Импортируем тип extensions
 from clients.http.gateway.client import build_gateway_http_client
 from clients.http.gateway.operations.schema import (
     GetOperationResponseSchema,
@@ -38,7 +38,11 @@ class OperationsGatewayHTTPClient(HTTPClient):
         :param operation_id: Уникальный идентификатор операции.
         :return: Объект httpx.Response с данными об операции.
         """
-        return self.get(f"/api/v1/operations/{operation_id}")
+        return self.get(
+            f"/api/v1/operations/{operation_id}",
+            # Явно передаём логическое имя маршрута
+            extensions=HTTPClientExtensions(route="/api/v1/operations/{operation_id}")
+        )
 
     def get_operation_receipt_api(self, operation_id: str) -> Response:
         """
@@ -47,7 +51,11 @@ class OperationsGatewayHTTPClient(HTTPClient):
         :param operation_id: Уникальный идентификатор операции.
         :return: Объект httpx.Response с чеком по операции.
         """
-        return self.get(f"/api/v1/operations/operation-receipt/{operation_id}")
+        return self.get(
+            f"/api/v1/operations/operation-receipt/{operation_id}",
+            # Явно передаём логическое имя маршрута
+            extensions=HTTPClientExtensions(route="/api/v1/operations/operation-receipt/{operation_id}")
+        )
 
     def get_operations_api(self, query: GetOperationsQuerySchema) -> Response:
         """
@@ -58,7 +66,9 @@ class OperationsGatewayHTTPClient(HTTPClient):
         """
         return self.get(
             "/api/v1/operations",
-            params=QueryParams(**query.model_dump(by_alias=True))
+            params=QueryParams(**query.model_dump(by_alias=True)),
+            # Явно передаём логическое имя маршрута
+            extensions=HTTPClientExtensions(route="/api/v1/operations")
         )
 
     def get_operations_summary_api(self, query: GetOperationsSummaryQuerySchema) -> Response:
@@ -70,7 +80,9 @@ class OperationsGatewayHTTPClient(HTTPClient):
         """
         return self.get(
             "/api/v1/operations/operations-summary",
-            params=QueryParams(**query.model_dump(by_alias=True))
+            params=QueryParams(**query.model_dump(by_alias=True)),
+            # Явно передаём логическое имя маршрута
+            extensions=HTTPClientExtensions(route="/api/v1/operations/operations-summary")
         )
 
     def make_fee_operation_api(self, request: MakeFeeOperationRequestSchema) -> Response:
