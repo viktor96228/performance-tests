@@ -6,12 +6,12 @@ from clients.http.gateway.client import (
     build_gateway_http_client,
     build_gateway_locust_http_client  # Импорт билдера для нагрузочного тестирования
 )
-from clients.http.gateway.users.schema import (  # Добавили импорт моделей
+from clients.http.gateway.users.schema import (
     GetUserResponseSchema,
     CreateUserRequestSchema,
     CreateUserResponseSchema
 )
-# Старые модели с использованием TypedDict были удалены
+
 
 class UsersGatewayHTTPClient(HTTPClient):
     """
@@ -25,6 +25,7 @@ class UsersGatewayHTTPClient(HTTPClient):
         :param user_id: Идентификатор пользователя.
         :return: Ответ от сервера (объект httpx.Response).
         """
+
         return self.get(
             f"/api/v1/users/{user_id}",
             extensions=HTTPClientExtensions(route="/api/v1/users/{user_id}")  # Явно передаём логическое имя маршрута
@@ -41,13 +42,13 @@ class UsersGatewayHTTPClient(HTTPClient):
         # Сериализуем модель в словарь с использованием alias
         return self.post("/api/v1/users", json=request.model_dump(by_alias=True))
 
+
     def get_user(self, user_id: str) -> GetUserResponseSchema:
         response = self.get_user_api(user_id)
         # Инициализируем модель через валидацию JSON строки
         return GetUserResponseSchema.model_validate_json(response.text)
 
         # Теперь используем pydantic-модель для аннотации
-
     def create_user(self) -> CreateUserResponseSchema:
         request = CreateUserRequestSchema()
         response = self.create_user_api(request)
