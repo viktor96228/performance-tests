@@ -270,7 +270,7 @@ def build_operations_gateway_locust_grpc_client(environment: Environment) -> Ope
     Используется исключительно в нагрузочных тестах.
 
     :param environment: объект окружения Locust.
-    :return: экземпляр AccountsGatewayGRPCClient с хуками сбора метрик.
+    :return: экземпляр OperationsGatewayGRPCClient с хуками сбора метрик.
     """
     return OperationsGatewayGRPCClient(channel=build_gateway_locust_grpc_client(environment))
 
