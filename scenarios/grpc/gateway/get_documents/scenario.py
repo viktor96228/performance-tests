@@ -61,4 +61,3 @@ class GetDocumentsScenarioUser(User):
     host = "localhost"
     tasks = [GetDocumentsSequentialTaskSet]
     wait_time = between(1, 3)
-gi
