@@ -8,6 +8,7 @@ from tools.locust.user import LocustBaseUser  # Импортируем базо�
 
 
 
+
 class GetDocumentsSequentialTaskSet(GatewayHTTPSequentialTaskSet):
     """
     Нагрузочный сценарий, который последовательно:
