@@ -20,7 +20,7 @@ builder = build_grpc_seeds_builder()
 result = builder.build(
     SeedsPlan(
         users=SeedUsersPlan(
-            count=100,
+            count=500,
             credit_card_accounts=SeedAccountsPlan(
                 count=1,
                 physical_cards=SeedCardsPlan(count=1)
