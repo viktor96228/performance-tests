@@ -40,3 +40,4 @@ if __name__ == '__main__':
     """
     seeds_scenario = ExistingUserIssueVirtualCardSeedsScenario()
     seeds_scenario.build() # Запуск сидинга
+
