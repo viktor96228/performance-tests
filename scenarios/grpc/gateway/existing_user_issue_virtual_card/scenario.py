@@ -1,7 +1,7 @@
 from locust import task, events
 from locust.env import Environment
 
-from clients.http.gateway.locust import GatewayHTTPTaskSet
+from clients.grpc.gateway.locust import GatewayGRPCTaskSet
 from seeds.scenarios.existing_user_issue_virtual_card import ExistingUserIssueVirtualCardSeedsScenario
 from seeds.schema.result import SeedUserResult
 from tools.locust.user import LocustBaseUser
@@ -22,7 +22,7 @@ def init(environment: Environment, **kwargs):
 
 
 # Набор задач (TaskSet), который будет выполняться виртуальными пользователями.
-class IssueVirtualCardTaskSet(GatewayHTTPTaskSet):
+class IssueVirtualCardTaskSet(GatewayGRPCTaskSet):
     # Типизируем объект пользователя из сидинга
     seed_user = SeedUserResult
 
