@@ -1,20 +1,25 @@
 import asyncio  # Модуль для работы с асинхронным циклом событий
+from datetime import datetime
+
 import httpx     # Асинхронный HTTP-клиент
 
-async def fetch_url(url: str):
+async def fetch_url(url: str) -> tuple[int, str]:
     # Создаём клиент HTTPX внутри контекстного менеджера,
     # чтобы соединение автоматически закрывалось после выполнения запроса
     async with httpx.AsyncClient() as client:
         # Отправляем GET-запрос и ждём ответа
+        print("Request fetch_url")
         response = await client.get(url)
         # Возвращаем код ответа и обрезанный до 50 символов текст
+        print("Response fetch_url")
         return response.status_code, response.text[:50]
 
 async def main():
     # Список URL, к которым будем делать запросы
     urls = [
         "https://echo.getpostman.com/delay/1", # Этот URL задержит ответ на 1 секунду
-        "https://echo.getpostman.com/delay/2"  # Этот URL задержит ответ на 2 секунды
+        "https://echo.getpostman.com/delay/2",  # Этот URL задержит ответ на 2 секунды
+        "https://echo.getpostman.com/delay/3"  # Этот URL задержит ответ на 3 секунды
     ]
 
     # Запуск всех запросов параллельно с помощью asyncio.gather
@@ -28,5 +33,7 @@ async def main():
 
 if __name__ == "__main__":
     # Запускаем основную корутину main() в асинхронном цикле событий
+    start_time = datetime.now()
     asyncio.run(main())
+    print(datetime.now() - start_time)
 
